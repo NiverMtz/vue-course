@@ -17,7 +17,7 @@ export default {
             // require: true
             default: 100,
             validator(value) {
-                return value > 100
+                return value > 10
             }
         }
     },
