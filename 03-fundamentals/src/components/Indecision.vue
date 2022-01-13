@@ -3,20 +3,30 @@
     <div class="bg-dark"></div>
 
     <div class="indecision-container">
-        <input v-model="question" type="text" placeholder="Hazme una pregunta">
+
+        <input
+            v-model="question"
+            type="text"
+            placeholder="Hazme una pregunta">
         <p>Recuerda terminar con un signo de interrogación (?)</p>
 
         <div v-if="isValidQuestion">
-            <h2>{{question}}</h2>
-            <h1>{{answer}}</h1>
+            <h2>{{ question }}</h2>
+            <h1>{{ answer }}</h1>
+            <!-- Si!: YES -->
+            <!-- No!: No -->
         </div>
+
     </div>
+
+
 </template>
+
 <script>
 export default {
     data() {
         return {
-            question: 'Pregunta',
+            question: null,
             answer: null,
             img: null,
             isValidQuestion: false
@@ -24,28 +34,36 @@ export default {
     },
     methods: {
         async getAnswer() {
-            this.answer = 'Pensando...'
-            const {answer, image} = await fetch('https://yesno.wtf/api').then( r => r.json())
-
-            this.answer = answer === 'yes' ? 'Si!' : 'No!'
-            this.img = image
+            
+            try {
+                this.answer = 'Pensando...'
+                const { answer, image } = await fetch('https://yesno.wtf/api').then( r => r.json() )
+    
+                this.answer = answer === 'yes' ? 'Si!' : 'No!'
+                this.img = image
+                
+            } catch (error) {
+                console.log('IndecisionComponent: ', error )
+                this.answer = 'No se pudo cargar del API'
+                this.img    = null
+            }
         }
     },
     watch: {
-        question(value, oldValue) {
-
+        question( value, oldValue ){
             this.isValidQuestion = false
-
-            if( !value.includes('?')) return
-
+            console.log({ value })
+            
+            if( !value.includes('?') ) return
             this.isValidQuestion = true
-
-            //TODO: Realizar petición
+            console.log({ value })
+            // TODO: Realizar petición http
             this.getAnswer()
         }
     }
 }
 </script>
+
 <style>
     img, .bg-dark {
         height: 100vh;
@@ -56,11 +74,9 @@ export default {
         top: 0px;
         width: 100vw;
     }
-
     .bg-dark {
         background-color: rgba(0, 0, 0, 0.4);
     }
-
     .indecision-container {
         position: relative;
         z-index: 99;
@@ -75,13 +91,11 @@ export default {
     input:focus {
         outline: none;
     }
-
     p {
         color: white;
         font-size: 20px;
         margin-top: 0px;
     }
-
     h1, h2 {
         color: white;
     }
